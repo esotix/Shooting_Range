@@ -4,17 +4,17 @@ using UnityEngine.UIElements;
 
 public class Target : MonoBehaviour
 {
-    public GameObject impactEffectPrefab;
     public string poolTag = "Target";
     public void Hit()
     {
-        if (impactEffectPrefab != null)
+        Debug.Log("Target Hit method called.");
+        if (EffectManager.Instance != null)
         {
-            Instantiate(impactEffectPrefab, transform.position, Quaternion.identity);
+            Debug.Log("Target hit! Triggering hit effect.");
+            EffectManager.Instance.HitEffect(transform.position);
         }
         if (TargetManager.Instance != null)
         {
-            EffectManager.Instance.HitEffect(transform.position);
             TargetManager.Instance.NotifyTargetHit(poolTag);
         }
         ReturnToPool();

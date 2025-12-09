@@ -75,4 +75,32 @@ public class ObjectPooler : MonoBehaviour
     {
         obj.SetActive(false);
     }
+
+    public void InitializePool(string tag, GameObject newPrefab, int initialSize)
+    {
+        if (poolDictionary.ContainsKey(tag))
+        {
+            Debug.LogWarning($"Le pool '{tag}' existe. Remplacement du Prefab en cours.");
+
+            foreach (GameObject obj in poolDictionary[tag])
+            {
+                Destroy(obj);
+            }
+            poolDictionary.Remove(tag);
+        }
+
+        List<GameObject> objectList = new List<GameObject>();
+
+        for (int i = 0; i < initialSize; i++)
+        {
+            GameObject obj = Instantiate(newPrefab);
+            obj.SetActive(false);
+            objectList.Add(obj);
+            obj.transform.parent = this.transform;
+        }
+
+        // Ajouter la nouvelle liste au dictionnaire
+        poolDictionary.Add(tag, objectList);
+        Debug.Log($"Pool '{tag}' initialisé avec succès. Taille: {initialSize}.");
+    }
 }
