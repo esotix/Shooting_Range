@@ -6,6 +6,7 @@ public class Projectile : MonoBehaviour
     public float launchSpeed = 20f;
     [Tooltip("Temps en secondes avant la destruction automatique du projectile.")]
     public float lifespan = 5f;
+    private float timeElapsed;
 
     private Rigidbody rb;
 
@@ -18,42 +19,49 @@ public class Projectile : MonoBehaviour
             enabled = false;
             return;
         }
-        Destroy(gameObject, lifespan);
     }
 
-    public void Launch(Vector3 direction)
+    private void Update()
     {
-        rb.linearVelocity = direction.normalized * launchSpeed;
+        timeElapsed += Time.deltaTime;
+        if (timeElapsed >= lifespan)
+        {
+            ReturnToPool();
+        }
     }
 
-    // NOUVELLE LOGIQUE DE DÉTECTION PAR TAG
+    public void Launch(Vector3 position, Quaternion rotation, Vector3 direction)
+    {
+        timeElapsed = 0f;
+        transform.position = position;
+        transform.rotation = rotation;
+        gameObject.SetActive(true);
+        rb.linearVelocity = direction * launchSpeed;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        // Debug pour voir si la collision est détectée du tout
         Debug.Log("Collision détectée avec : " + collision.gameObject.name);
 
-        // 1. Vérifie si l'objet touché a le tag "Target"
         if (collision.gameObject.CompareTag("Target"))
         {
-            // Debug pour confirmer la cible
             Debug.Log("Cible 'Target' touchée ! Destruction...");
 
-            // 2. Tente de récupérer le script de cible (optionnel, mais bon de le garder)
             Target target = collision.gameObject.GetComponent<Target>();
 
             if (target != null)
             {
-                // Si le script est trouvé, on l'appelle
                 target.Hit();
             }
             else
             {
-                // Si le script n'est pas trouvé (mais le tag l'est), on détruit l'objet quand même
                 Destroy(collision.gameObject);
             }
         }
-
-        // Détruit toujours le projectile après l'impact
-        Destroy(gameObject);
+        ReturnToPool();
+    }
+    private void ReturnToPool()
+    {
+        ObjectPooler.Instance.ReturnToPool(gameObject);
     }
 }

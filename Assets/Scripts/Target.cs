@@ -1,22 +1,27 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Target : MonoBehaviour
 {
-    [Tooltip("Effet visuel/sonore à jouer lors de l'impact.")]
-    public GameObject impactEffectPrefab; // Optionnel : pour les effets de particules
-
-    // Fonction appelée par le projectile lors de l'impact
+    public GameObject impactEffectPrefab;
+    public string poolTag = "Target";
     public void Hit()
     {
-        // Optionnel : Instancie un effet visuel (e.g., explosion)
         if (impactEffectPrefab != null)
         {
             Instantiate(impactEffectPrefab, transform.position, Quaternion.identity);
         }
-
-        // Détruit la cible
-        Destroy(gameObject);
-
-        Debug.Log(gameObject.name + " a été détruit par l'impact !");
+        if (TargetManager.Instance != null)
+        {
+            EffectManager.Instance.HitEffect(transform.position);
+            TargetManager.Instance.NotifyTargetHit(poolTag);
+        }
+        ReturnToPool();
     }
+    private void ReturnToPool()
+    {
+        ObjectPooler.Instance.ReturnToPool(gameObject);
+    }
+    
 }
