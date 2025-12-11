@@ -1,14 +1,19 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class TargetManager : MonoBehaviour
 {
     public static TargetManager Instance;
 
-    [Header("Configuration du Respawn")]
+    [Header("Configuration du Spawning")]
     [Tooltip("Liste des points de réapparition possibles.")]
     public List<Transform> spawnPoints;
-    public float respawnDelay = 3f;
+    public float spawnInterval = 5f;
+    public int maxTargets = 5;
+
+    [Header("État")]
+    private int currentTargets = 0;
 
     void Awake()
     {
@@ -16,23 +21,30 @@ public class TargetManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-
     }
 
     void Start()
     {
-        StartCoroutine(RespawnTargetAfterDelay("Target"));
-    }
-    public void NotifyTargetHit(string targetTag)
-    {
-        StartCoroutine(RespawnTargetAfterDelay(targetTag));
+        StartCoroutine(SpawnLoop());
     }
 
-    private System.Collections.IEnumerator RespawnTargetAfterDelay(string tag)
+    private IEnumerator SpawnLoop()
     {
-        Debug.Log("Démarrage du délai de réapparition pour la cible avec le tag: " + tag);
-        yield return new WaitForSeconds(respawnDelay);
+        WaitForSeconds delay = new WaitForSeconds(spawnInterval);
 
+        while (true)
+        {
+            yield return delay;
+
+            if (currentTargets < maxTargets)
+            {
+                SpawnTarget("Target");
+            }
+        }
+    }
+
+    private void SpawnTarget(string tag)
+    {
         GameObject targetGO = ObjectPooler.Instance.SpawnFromPool(tag);
 
         if (targetGO != null)
@@ -40,6 +52,24 @@ public class TargetManager : MonoBehaviour
             Vector3 spawnPosition = ChooseRandomSpawnPoint();
             targetGO.transform.position = spawnPosition;
             targetGO.SetActive(true);
+
+            currentTargets++;
+            if (GameplayManager.Instance != null)
+            {
+                GameplayManager.Instance.TargetActivated();
+            }
+        }
+    }
+
+    public void RegisterTargetDespawn()
+    {
+        if (currentTargets > 0)
+        {
+            currentTargets--;
+        }
+        if (GameplayManager.Instance != null)
+        {
+            GameplayManager.Instance.TargetDeactivated();
         }
     }
 

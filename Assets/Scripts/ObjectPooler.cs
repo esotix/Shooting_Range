@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,6 +20,11 @@ public class ObjectPooler : MonoBehaviour
     public List<PoolConfig> pools;
     private Dictionary<string, List<GameObject>> poolDictionary;
 
+    private List<GameObject> activeProjectiles = new List<GameObject>();
+    public Transform cleaningReferencePoint;
+    public float maxProjectileDistance = 50f;
+    public float cleaningInterval = 0.3f;
+
     void Awake()
     {
         Instance = this;
@@ -37,6 +43,16 @@ public class ObjectPooler : MonoBehaviour
             }
 
             poolDictionary.Add(pool.tag, objectList);
+        }
+    }
+
+    void Start()
+    {
+        StartCoroutine(CleanupRoutine());
+
+        if (cleaningReferencePoint == null)
+        {
+            cleaningReferencePoint = transform;
         }
     }
 
@@ -99,8 +115,35 @@ public class ObjectPooler : MonoBehaviour
             obj.transform.parent = this.transform;
         }
 
-        // Ajouter la nouvelle liste au dictionnaire
         poolDictionary.Add(tag, objectList);
         Debug.Log($"Pool '{tag}' initialisé avec succès. Taille: {initialSize}.");
+    }
+
+    IEnumerator CleanupRoutine()
+    {
+        WaitForSeconds delay = new WaitForSeconds(cleaningInterval);
+
+        while (true)
+        {
+            yield return delay;
+
+            for (int i = activeProjectiles.Count - 1; i >= 0; i--)
+            {
+                GameObject projectile = activeProjectiles[i];
+
+                if (projectile == null || !projectile.activeInHierarchy)
+                {
+                    activeProjectiles.RemoveAt(i);
+                    continue;
+                }
+
+                float distance = Vector3.Distance(projectile.transform.position, cleaningReferencePoint.position);
+
+                if (distance > maxProjectileDistance)
+                {
+                    ReturnToPool(projectile);
+                }
+            }
+        }
     }
 }

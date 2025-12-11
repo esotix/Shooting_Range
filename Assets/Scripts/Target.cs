@@ -13,14 +13,16 @@ public class Target : MonoBehaviour
             Debug.Log("Target hit! Triggering hit effect.");
             EffectManager.Instance.HitEffect(transform.position);
         }
-        if (TargetManager.Instance != null)
-        {
-            TargetManager.Instance.NotifyTargetHit(poolTag);
-        }
+        //if (TargetManager.Instance != null)
+        //{
+        //    TargetManager.Instance.NotifyTargetHit(poolTag);
+        //}
+        GameplayManager.Instance.AddScore(10);
         ReturnToPool();
     }
     private void ReturnToPool()
     {
+        TargetManager.Instance.RegisterTargetDespawn();
         ObjectPooler.Instance.ReturnToPool(gameObject);
     }
     
