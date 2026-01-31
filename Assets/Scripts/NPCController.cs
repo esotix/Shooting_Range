@@ -43,7 +43,7 @@ public class NPCController : MonoBehaviour
 
     void Update()
     {
-        float speedPercent = agent.velocity.magnitude / runSpeed;
+        float speedPercent = agent.velocity.magnitude;
         animator.SetFloat("speed", speedPercent);
 
         if (fov != null && fov.canSeePlayer)
