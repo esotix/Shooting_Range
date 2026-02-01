@@ -6,6 +6,7 @@ public class DroneRB3DCP : MonoBehaviour
 {
     [Header("A1 - Contraintes")]
     public GameObject following;
+    public Transform droneModel;
     public Vector3 offset = new Vector3(-1f, 1.2f, 2.5f);
     public LayerMask obstacleMask;
     public float exclusionZoneRadius = 1.0f;
@@ -130,6 +131,13 @@ public class DroneRB3DCP : MonoBehaviour
 
             smoothedVelocity = finalVelocity;
             rb.linearVelocity = finalVelocity;
+
+            Quaternion targetRotation = followingTransform.rotation;
+            droneModel.rotation = Quaternion.Slerp(
+                droneModel.rotation,
+                targetRotation,
+                Time.fixedDeltaTime * 5f
+            );
 
             yield return waitFixed;
         }

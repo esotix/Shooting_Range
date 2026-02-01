@@ -21,8 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Shield FX_14
-  m_Shader: {fileID: -6465566751694194690, guid: 7273ade5faebcb9448394e807492b217,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 7273ade5faebcb9448394e807492b217, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -72,6 +71,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Alpha: 0.085
     - _Animation_X: 0
     - _Animation_Y: 2
     - _BUILTIN_QueueControl: 0
@@ -81,9 +81,9 @@ Material:
     - _Enable_Texture: 1
     - _Float: 0.509
     - _Opacity_Global: 1
-    - _Opacity_On_Centre: 0.02
+    - _Opacity_On_Centre: 0
     - _Opacity_On_Side: 1
-    - _Power: 4
+    - _Power: 3
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Speed: 1
@@ -111,6 +111,7 @@ Material:
     - _Tiling: {r: 12, g: 12, b: 0, a: 0}
     - _Tiling_Tex_2: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &5565035484657618864
 MonoBehaviour:
   m_ObjectHideFlags: 11

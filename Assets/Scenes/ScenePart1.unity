@@ -1027,7 +1027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 5432941945182349428, guid: 72b3628ae25999f4cb935312911a01e4, type: 3}
-  firePoint: {fileID: 1882865573}
+  FirePoint: {fileID: 0}
   muzzleFlash: {fileID: 1648201084}
 --- !u!1 &1249617917
 GameObject:
