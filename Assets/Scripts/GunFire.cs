@@ -7,9 +7,8 @@ public class GunFire : MonoBehaviour
     [Tooltip("Le Prefab du projectile à tirer.")]
     public GameObject projectilePrefab;
     [Tooltip("L'objet vide positionné au bout du canon.")]
-    public Transform firePoint;
+    public Transform FirePoint;
 
-    // NOUVEAU : Référence au système de particules enfant
     [Tooltip("Le composant Particle System pour le flash de bouche.")]
     public ParticleSystem muzzleFlash;
 
@@ -28,11 +27,9 @@ public class GunFire : MonoBehaviour
             Debug.LogError("GunFire requires an XRGrabInteractable component on the same GameObject!");
         }
 
-        // Optionnel : Vérifier si le Muzzle Flash est assigné
-        if (muzzleFlash == null && firePoint != null)
+        if (muzzleFlash == null && FirePoint != null)
         {
-            // Tente de trouver le composant directement sur le FirePoint si non assigné
-            muzzleFlash = firePoint.GetComponentInChildren<ParticleSystem>();
+            muzzleFlash = FirePoint.GetComponentInChildren<ParticleSystem>();
         }
     }
 
@@ -44,30 +41,30 @@ public class GunFire : MonoBehaviour
         }
     }
 
-    // Fonction de tir mise à jour
     public void FireWeapon(ActivateEventArgs args)
     {
-        if (projectilePrefab == null || firePoint == null)
+        if (projectilePrefab == null || FirePoint == null)
         {
             Debug.LogError("Projectile Prefab ou Fire Point manquant sur l'arme.");
             return;
         }
 
-        // --- NOUVELLE ÉTAPE : Jouer l'effet de particules ---
         if (muzzleFlash != null)
         {
-            // Joue l'effet si le système de particules est assigné
             muzzleFlash.Play();
         }
 
-        // --- Ancienne logique : Lancement du projectile ---
-        GameObject newProjectileGO = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        GameObject projectileGO = ObjectPooler.Instance.SpawnFromPool("Bullet");
 
-        Projectile projectileScript = newProjectileGO.GetComponent<Projectile>();
-
-        if (projectileScript != null)
+        if (projectileGO != null)
         {
-            projectileScript.Launch(firePoint.forward);
+            Projectile projectileComponent = projectileGO.GetComponent<Projectile>();
+
+            projectileComponent.Launch(
+                FirePoint.position,
+                FirePoint.rotation,
+                FirePoint.forward
+            );
         }
-    }
+    } 
 }
